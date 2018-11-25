@@ -1,5 +1,7 @@
 package nn;
 
+import java.util.Arrays;
+
 public class Network {
 
     private double[][] output;      //[layer][neuron]
@@ -33,6 +35,28 @@ public class Network {
     }
 
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        Network network = new Network(4,1,3,4);
+        System.out.println(Arrays.toString(network.calculate(0.2, 0.9, 0.3, 0.4)));
+    }
+
+    public double[] calculate(double... input) {
+        if(input.length != this.INPUT_SIZE) return null;
+        this.output[0] = input;
+        for (int layer = 1; layer < NETWORK_SIZE; layer++) {
+            for (int neuron = 0; neuron < NETWORK_LAYER_SIZES[layer]; neuron++) {
+
+                double summ = bias[layer][neuron];
+                for (int prevNeuron = 0; prevNeuron < NETWORK_LAYER_SIZES[layer - 1]; prevNeuron++) {
+                    summ += output[layer - 1][prevNeuron] * weigths[layer][neuron][prevNeuron];
+                }
+
+                output[layer][neuron] = sigmoid(summ);
+            }
+        }
+        return output[NETWORK_SIZE - 1];
+    }
+
+    private double sigmoid(double x) {
+        return 1d / (1 + Math.exp(-x));
     }
 }
