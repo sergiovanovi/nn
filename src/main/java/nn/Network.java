@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class Network {
 
     private double[][] output;              //[layer][neuron]
-    private double[][][] weigths;           //[layer][neuron][previous neuron]
+    private double[][][] weights;           //[layer][neuron][previous neuron]
     private double[][] bias;                //[layer][neuron]
 
     private double[][] errorSignal;         //for Backpropagation train
@@ -24,7 +24,7 @@ public class Network {
         this.OUTPUT_SIZE = NETWORK_LAYER_SIZES[NETWORK_SIZE - 1];
 
         this.output = new double[NETWORK_SIZE][];
-        this.weigths = new double[NETWORK_SIZE][][];
+        this.weights = new double[NETWORK_SIZE][][];
         this.bias = new double[NETWORK_SIZE][];
 
         this.errorSignal = new double[NETWORK_SIZE][];
@@ -38,7 +38,7 @@ public class Network {
             this.outputDerivative[i] = new double[NETWORK_LAYER_SIZES[i]];
 
             if(i > 0) {
-                this.weigths[i] = new double[NETWORK_LAYER_SIZES[i]][NETWORK_LAYER_SIZES[i - 1]];   //TODO fill it
+                this.weights[i] = new double[NETWORK_LAYER_SIZES[i]][NETWORK_LAYER_SIZES[i - 1]];   //TODO fill it
             }
         }
     }
@@ -67,7 +67,7 @@ public class Network {
 
                 double summ = bias[layer][neuron];
                 for (int prevNeuron = 0; prevNeuron < NETWORK_LAYER_SIZES[layer - 1]; prevNeuron++) {
-                    summ += output[layer - 1][prevNeuron] * weigths[layer][neuron][prevNeuron];
+                    summ += output[layer - 1][prevNeuron] * weights[layer][neuron][prevNeuron];
                 }
 
                 output[layer][neuron] = sigmoid(summ);
@@ -101,7 +101,7 @@ public class Network {
             for (int neuron = 0; neuron < NETWORK_LAYER_SIZES[layer]; neuron++) {
                 double summ = 0;
                 for (int nextNeuron = 0; nextNeuron < NETWORK_LAYER_SIZES[layer + 1]; nextNeuron++) {
-                    summ += weigths[layer + 1][nextNeuron][neuron] * errorSignal[layer + 1][nextNeuron];
+                    summ += weights[layer + 1][nextNeuron][neuron] * errorSignal[layer + 1][nextNeuron];
                 }
                 this.errorSignal[layer][neuron] = summ * outputDerivative[layer][neuron];
             }
@@ -114,7 +114,7 @@ public class Network {
             for (int neuron = 0; neuron < NETWORK_LAYER_SIZES[layer]; neuron++) {
                 for (int prevNeuron = 0; prevNeuron < NETWORK_LAYER_SIZES[layer - 1]; prevNeuron++) {
                     double delta = - eta * output[layer - 1][prevNeuron] * errorSignal[layer][neuron];
-                    weigths[layer][neuron][prevNeuron] += delta;
+                    weights[layer][neuron][prevNeuron] += delta;
                 }
                 double delta = - eta * errorSignal[layer][neuron];
                 bias[layer][neuron] += delta;
